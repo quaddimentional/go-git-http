@@ -31,17 +31,17 @@ var (
 func Authenticator(authf func(AuthInfo) (bool, error)) func(http.Handler) http.Handler {
 	return func(handler http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
-			auth, err := parseAuthHeader(req.Header.Get("Authorization"))
-			if err != nil {
+			authName, authPass, ok := req.BasicAuth()
+			if !ok {
 				w.Header().Set("WWW-Authenticate", `Basic realm="git server"`)
-				http.Error(w, err.Error(), http.StatusUnauthorized)
+				http.Error(w, "request header has no authorization header", http.StatusUnauthorized)
 				return
 			}
 
 			// Build up info from request headers and URL
 			info := AuthInfo{
-				Username: auth.Name,
-				Password: auth.Pass,
+				Username: authName,
+				Password: authPass,
 				Repo:     repoName(req.URL.Path),
 				Push:     isPush(req),
 				Fetch:    isFetch(req),

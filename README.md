@@ -3,7 +3,8 @@ go-git-http
 
 [![Build Status](https://travis-ci.org/AaronO/go-git-http.svg)](https://travis-ci.org/AaronO/go-git-http)
 
-A Smart Git Http server library in Go (golang)
+An updated and fixed go-git-http library written in Go (golang)
+With Small fixes for multiplatform
 
 ### Example
 

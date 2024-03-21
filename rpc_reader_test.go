@@ -2,14 +2,14 @@ package githttp_test
 
 import (
 	"io"
-	"io/ioutil"
+
 	"net/http"
 	"os"
 	"path/filepath"
-	"reflect"
 	"testing"
 
-	"github.com/AaronO/go-git-http"
+	"github.com/google/go-cmp/cmp"
+	githttp "github.com/quaddimentional/go-git-http"
 )
 
 func TestRpcReader(t *testing.T) {
@@ -164,14 +164,14 @@ func TestRpcReader(t *testing.T) {
 			Rpc:    tt.rpc,
 		}
 
-		_, err = io.Copy(ioutil.Discard, rr)
+		_, err = io.Copy(io.Discard, rr)
 		if err != nil {
 			t.Errorf("io.Copy: %v", err)
 		}
 
 		f.Close()
 
-		if got := rr.Events; !reflect.DeepEqual(got, tt.want) {
+		if got := rr.Events; !cmp.Equal(got, tt.want) {
 			t.Errorf("test %q/%q:\n got: %#v\nwant: %#v\n", tt.rpc, tt.file, got, tt.want)
 		}
 	}

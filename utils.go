@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -90,4 +92,19 @@ func hdrCacheForever(w http.ResponseWriter) {
 	w.Header().Set("Date", fmt.Sprintf("%d", now))
 	w.Header().Set("Expires", fmt.Sprintf("%d", expires))
 	w.Header().Set("Cache-Control", "public, max-age=31536000")
+}
+
+// Returns path to git executable
+func getGitPath() string {
+	gitPath, err := exec.LookPath("git")
+	if err != nil {
+		panic("git is not installed")
+	}
+
+	gitAbsPath, err := filepath.Abs(gitPath)
+	if err != nil {
+		panic(err)
+	}
+
+	return gitAbsPath
 }

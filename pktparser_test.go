@@ -3,7 +3,6 @@ package githttp
 import (
 	"encoding/hex"
 	"errors"
-	"reflect"
 	"testing"
 )
 
@@ -37,7 +36,7 @@ func TestParsePktLen(t *testing.T) {
 
 	for _, tt := range tests {
 		gotLen, gotErr := parsePktLen([]byte(tt.in))
-		if gotLen != tt.wantLen || !reflect.DeepEqual(gotErr, tt.wantErr) {
+		if gotLen != tt.wantLen || !errors.Is(gotErr, tt.wantErr) {
 			t.Errorf("test %q:\n got: %#v, %#v\nwant: %#v, %#v\n", tt.in, gotLen, gotErr, tt.wantLen, tt.wantErr)
 		}
 	}

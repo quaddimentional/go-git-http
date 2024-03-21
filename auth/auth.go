@@ -20,6 +20,8 @@ type AuthInfo struct {
 	// Are we pushing or fetching ?
 	Push  bool
 	Fetch bool
+
+	Request *http.Request
 }
 
 var (
@@ -32,7 +34,7 @@ func Authenticator(authf func(AuthInfo) (bool, error)) func(http.Handler) http.H
 			auth, err := parseAuthHeader(req.Header.Get("Authorization"))
 			if err != nil {
 				w.Header().Set("WWW-Authenticate", `Basic realm="git server"`)
-				http.Error(w, err.Error(), 401)
+				http.Error(w, err.Error(), http.StatusUnauthorized)
 				return
 			}
 
@@ -43,12 +45,14 @@ func Authenticator(authf func(AuthInfo) (bool, error)) func(http.Handler) http.H
 				Repo:     repoName(req.URL.Path),
 				Push:     isPush(req),
 				Fetch:    isFetch(req),
+
+				Request: req,
 			}
 
 			// Call authentication function
 			authenticated, err := authf(info)
 			if err != nil {
-				code := 500
+				code := http.StatusInternalServerError
 				msg := err.Error()
 				if se, ok := err.(StatusError); ok {
 					code = se.StatusCode()
@@ -59,7 +63,7 @@ func Authenticator(authf func(AuthInfo) (bool, error)) func(http.Handler) http.H
 
 			// Deny access to repo
 			if !authenticated {
-				http.Error(w, "Forbidden", 403)
+				http.Error(w, "Forbidden", http.StatusForbidden)
 				return
 			}
 

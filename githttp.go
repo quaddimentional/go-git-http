@@ -28,14 +28,13 @@ type GitHttp struct {
 // Implement the http.Handler interface
 func (g *GitHttp) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	g.requestHandler(w, r)
-	return
 }
 
 // Shorthand constructor for most common scenario
 func New(root string) *GitHttp {
 	return &GitHttp{
 		ProjectRoot: root,
-		GitBinPath:  "/usr/bin/git",
+		GitBinPath:  getGitPath(),
 		UploadPack:  true,
 		ReceivePack: true,
 	}
@@ -54,7 +53,7 @@ func (g *GitHttp) event(e Event) {
 	if g.EventHandler != nil {
 		g.EventHandler(e)
 	} else {
-		fmt.Printf("EVENT: %q\n", e)
+		fmt.Printf("EVENT: %v\n", e)
 	}
 }
 
@@ -68,7 +67,7 @@ func (g *GitHttp) serviceRpc(hr HandlerReq) error {
 		return err
 	}
 
-	if access == false {
+	if !access {
 		return &ErrorNoAccess{hr.Dir}
 	}
 

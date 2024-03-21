@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -20,14 +21,14 @@ var (
 func parseAuthHeader(header string) (*BasicAuth, error) {
 	parts := strings.SplitN(header, " ", 2)
 	if len(parts) < 2 {
-		return nil, fmt.Errorf("Invalid authorization header, not enought parts")
+		return nil, errors.New("invalid authorization header, not enought parts")
 	}
 
 	authType := parts[0]
 	authData := parts[1]
 
 	if strings.ToLower(authType) != "basic" {
-		return nil, fmt.Errorf("Authentication '%s' was not of 'Basic' type", authType)
+		return nil, fmt.Errorf("authentication '%s' was not of 'Basic' type", authType)
 	}
 
 	data, err := base64.StdEncoding.DecodeString(authData)
@@ -37,7 +38,7 @@ func parseAuthHeader(header string) (*BasicAuth, error) {
 
 	matches := basicAuthRegex.FindStringSubmatch(string(data))
 	if matches == nil {
-		return nil, fmt.Errorf("Authorization data '%s' did not match auth regexp", data)
+		return nil, fmt.Errorf("authorization data '%s' did not match auth regexp", data)
 	}
 
 	return &BasicAuth{

@@ -15,7 +15,7 @@ import (
     "log"
     "net/http"
 
-    "github.com/AaronO/go-git-http"
+    "github.com/quaddimentional/go-git-http"
 )
 
 func main() {
@@ -42,8 +42,8 @@ import (
     "log"
     "net/http"
 
-    "github.com/AaronO/go-git-http"
-    "github.com/AaronO/go-git-http/auth"
+    "github.com/quaddimentional/go-git-http"
+    "github.com/quaddimentional/go-git-http/auth"
 )
 
 
